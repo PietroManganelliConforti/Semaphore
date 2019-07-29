@@ -141,12 +141,18 @@ void disastrOS_trap(){
 
 void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){  
   /* INITIALIZATION OF SYSTEM STRUCTURES*/
+  
+
   disastrOS_debug("initializing system structures\n");
   PCB_init();
   Timer_init();
   Resource_init();
   Descriptor_init();
   init_pcb=0;
+
+  disastrOS_debug("-initializing semaphores-\n");
+  Semaphore_init();
+  SemDescriptor_init();	
 
   // populate the vector of syscalls and number of arguments for each syscall
   for (int i=0; i<DSOS_MAX_SYSCALLS; ++i){
@@ -259,6 +265,14 @@ void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){
   setcontext(&running->cpu_state);
 }
 
+int disastrOS_semOpen(int id){
+	return disastrOS_syscall(DSOS_CALL_SEMOPEN,id); //11
+}
+
+int disastrOS_semClose(int id){
+	return disastrOS_syscall(DSOS_CALL_SEMCLOSE,id); //12
+}
+
 int disastrOS_fork(){
   return disastrOS_syscall(DSOS_CALL_FORK);
 }
@@ -305,8 +319,6 @@ int disastrOS_destroyResource(int resource_id) {
   return disastrOS_syscall(DSOS_CALL_DESTROY_RESOURCE, resource_id);
 }
 
-
-
 void disastrOS_printStatus(){
   printf("****************** DisastrOS ******************\n");
   printf("Running: ");
@@ -327,3 +339,10 @@ void disastrOS_printStatus(){
   PCBList_print(&zombie_list);
   printf("\n***********************************************\n\n");
 };
+
+
+
+
+
+
+
