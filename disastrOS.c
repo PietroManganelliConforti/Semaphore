@@ -320,6 +320,7 @@ int disastrOS_destroyResource(int resource_id) {
 }
 
 void disastrOS_printStatus(){
+
   printf("****************** DisastrOS ******************\n");
   printf("Running: ");
   if (running)
@@ -338,6 +339,7 @@ void disastrOS_printStatus(){
   printf("\nZombie: ");
   PCBList_print(&zombie_list);
   printf("\n***********************************************\n\n");
+
 };
 
 
