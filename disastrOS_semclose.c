@@ -20,7 +20,7 @@ void internal_semClose(){
 	SemDescriptor* sd= SemDescriptorList_byFd(&running->sem_descriptors, id);
 
  	if(!sd){
-  		 printf("[ERSEMC] Errore nella semClose del semaforo con id:%d \n",id);
+  		 printf("[ERSEMC] Errore nella semClose del semaforo\n");
 		 // running->syscall_retvalue=DSOS_ERESOURCECLOSE;
    		 return;
   	}
