@@ -11,8 +11,8 @@ void internal_semOpen(){
 	int id = running->syscall_args[0]; //id 
 
 	if(id<0){
-		printf("[SEM] errore sem_id invalido (%d < 0!) \n",id);
-		//val di ritorno da aggiungere..		
+		printf("[SEMO] errore sem_id invalido (%d < 0!) \n",id);
+		running->syscall_retvalue = DSOS_ESEMID;	
 		return;
 	}
 
@@ -21,7 +21,8 @@ void internal_semOpen(){
 	if (!sem){
        		sem = Semaphore_alloc(id, 1); //in caso lo creo (type=1) e aggiungo in coda
 			if(!sem) {
-				printf("[SEM] errore nell'allocazione del semaforo!\n");
+				printf("[SEMO] errore nell'allocazione del semaforo!\n");
+				running->syscall_retvalue = DSOS_ESEMALLOC;
 				return;
 			}
         List_insert(&semaphores_list, semaphores_list.last, (ListItem*) sem);
@@ -31,7 +32,8 @@ void internal_semOpen(){
 	SemDescriptor* sd= SemDescriptor_alloc(running->last_sem_fd,sem,running);
 
 	if(!sd) {
-		printf("[SEM] errore nell'allocazione del semDescriptor!\n");
+		printf("[SEMO] errore nell'allocazione del semDescriptor!\n");
+		running->syscall_retvalue = DSOS_ESEMDESC;
 		return;
 	}
 
