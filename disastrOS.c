@@ -273,6 +273,14 @@ int disastrOS_semClose(int id){
 	return disastrOS_syscall(DSOS_CALL_SEMCLOSE,id); //12
 }
 
+int disastrOS_semWait(int id){
+	return disastrOS_syscall(DSOS_CALL_SEMWAIT,id); //13
+}
+
+int disastrOS_semPost(int id){
+	return disastrOS_syscall(DSOS_CALL_SEMPOST,id); //14
+}
+
 int disastrOS_fork(){
   return disastrOS_syscall(DSOS_CALL_FORK);
 }
