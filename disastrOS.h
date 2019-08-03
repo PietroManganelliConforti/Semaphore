@@ -17,6 +17,10 @@
 int disastrOS_semOpen(int id);
 //semClose
 int disastrOS_semClose(int id);
+// semWait
+int disastrOS_semWait(int id);
+//semPost
+int disastrOS_semPost(int id);
 
 
 // initializes the structures and spawns a fake init process
