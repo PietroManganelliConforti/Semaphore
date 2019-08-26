@@ -34,18 +34,18 @@ void internal_semWait(){
 	if(sem->count < 0 ){
 
 		//rimuovo il descriptor del processo corrente e lo metto nella relativa lista d'attesa
-		List_detach(&sem->descriptors,sd->ptr);
-		List_insert(&sem->waiting_descriptors, sem->waiting_descriptors.last,sd->ptr);
+		List_detach(&sem->descriptors,(ListItem*)sd->ptr);
+		List_insert(&sem->waiting_descriptors, sem->waiting_descriptors.last,(ListItem*)sd->ptr);
 		
 		//metto il processo corrente in attesa
 		running->status=Waiting;
 		List_insert(&waiting_list, waiting_list.last, (ListItem*) running);
 		
 		//prendo il primo della lista ready e lo faccio partire
-		running=(PCB*) List_detach(&ready_list, ready_list.first);
+		running=(PCB*) List_detach(&ready_list, (ListItem*)ready_list.first);
 	}
 
-	printf("[SEMW]SemWait effettuata");
+	printf("[SEMW]SemWait effettuata\n");
 	running->syscall_retvalue = 0;
 	return;
 }

@@ -7,7 +7,7 @@
 #include "disastrOS_semdescriptor.h"
 
 void internal_semPost(){
-  
+
   	//1 prendo l'id del semaforo 
 	int id = running->syscall_args[0]; 
 
@@ -35,20 +35,21 @@ void internal_semPost(){
 	if(sem->count <=0 ){
 		//rimuovo il descriptor del primo in attesa dalla relativa lista 
 		SemDescriptorPtr* next_sd_ptr = (SemDescriptorPtr*) List_detach(&sem->waiting_descriptors, sem->waiting_descriptors.first);
-		List_insert(&sem->descriptors,sem->descriptors.last,next_sd_ptr);
+		List_insert(&sem->descriptors,sem->descriptors.last,(ListItem*)next_sd_ptr);
 
 		//rimuovo il processo dalla lista d'attesa
-		List_detach(&waiting_list,next_sd_ptr->descriptor->pcb);
+		List_detach(&waiting_list,(ListItem*)next_sd_ptr->descriptor->pcb);
 		
      		//cambio lo stato del processo corrente in ready e lo aggiungo alla relativa lista
     		running->status = Ready;
-		List_insert(&ready_list, ready_list.last, running);
+		List_insert(&ready_list, ready_list.last, (ListItem*)running);
 
 		//eseguo il processo in attesa
 		running = next_sd_ptr->descriptor->pcb;
        	}
 
-	printf("[SEMP]Sempost effettuata");
+	printf("[SEMP]Sempost effettuata\n");
 	running->syscall_retvalue = 0;
 	return;
+
 }

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <poll.h>
-
 #include "disastrOS.h"
 
 // we need this to handle the sleep state
@@ -31,24 +30,30 @@ void childFunction(void* args){
 */
 	int sem1=disastrOS_semOpen(1);
 	int sem2=disastrOS_semOpen(2);
-	int sem3=disastrOS_semOpen(-3);
+//	int sem3=disastrOS_semOpen(-3);
+	disastrOS_semWait(sem1);
+	disastrOS_printStatus();
+	disastrOS_semPost(sem1);
+	disastrOS_printStatus();
+	disastrOS_semPost(sem1);
+	disastrOS_printStatus();
   	disastrOS_semClose(sem1);  
   	disastrOS_semClose(sem2);
-  	disastrOS_semClose(sem3);
+//  	disastrOS_semClose(sem3);
 
   disastrOS_exit(disastrOS_getpid()+1);
 }
 
 
 void initFunction(void* args) {
-  //disastrOS_printStatus();
+  disastrOS_printStatus();
   printf("hello, I am init and I just started\n");
   disastrOS_spawn(sleeperFunction, 0);
   
 
   printf("I feel like to spawn 10 nice threads\n");
   int alive_children=0;
-  for (int i=0; i<10; ++i) {
+  for (int i=0; i<4; ++i) { ///cambiato da 10 a 4
     int type=0;
     int mode=DSOS_CREATE;
     printf("mode: %d\n", mode);

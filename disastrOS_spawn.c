@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <signal.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "disastrOS.h"
