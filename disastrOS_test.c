@@ -28,19 +28,26 @@ void childFunction(void* args){
     disastrOS_sleep((20-disastrOS_getpid())*5);
   }
 */
-	int sem1=disastrOS_semOpen(1);
-	int sem2=disastrOS_semOpen(2);
-//	int sem3=disastrOS_semOpen(-3);
-	disastrOS_semWait(sem1);
-	disastrOS_printStatus();
-	disastrOS_semPost(sem1);
-	disastrOS_printStatus();
-	disastrOS_semPost(sem1);
-	disastrOS_printStatus();
-  	disastrOS_semClose(sem1);  
-  	disastrOS_semClose(sem2);
-//  	disastrOS_semClose(sem3);
 
+	int sem1=disastrOS_semOpen(1,0);
+//	int sem2=disastrOS_semOpen(2,1);
+//	int sem3=disastrOS_semOpen(-3);
+	if(disastrOS_getpid()%2==0){
+	disastrOS_semWait(sem1);
+	printf("effettuata sw da [[%d]]\n",disastrOS_getpid());}
+//	disastrOS_semWait(sem1);
+//	disastrOS_printStatus();
+//	disastrOS_semPost(sem1);
+//	disastrOS_printStatus();
+//	disastrOS_printStatus();
+    
+//  	disastrOS_semClose(sem2);
+//  	disastrOS_semClose(sem2);
+	if(disastrOS_getpid()%2==1){
+	disastrOS_semPost(sem1);
+	printf("effettuata sw da [[%d]]\n",disastrOS_getpid());}
+
+	disastrOS_semClose(sem1);
   disastrOS_exit(disastrOS_getpid()+1);
 }
 
