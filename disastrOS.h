@@ -14,7 +14,7 @@
 #endif //_DISASTROS_DEBUG_
 
 // semOpen
-int disastrOS_semOpen(int id);
+int disastrOS_semOpen(int id, int counter);
 //semClose
 int disastrOS_semClose(int id);
 // semWait

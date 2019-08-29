@@ -190,7 +190,7 @@ void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){
 
   // fill these with the syscall handlers
   syscall_vector[DSOS_CALL_SEMOPEN]      = internal_semOpen;
-  syscall_numarg[DSOS_CALL_SEMOPEN]      = 1;
+  syscall_numarg[DSOS_CALL_SEMOPEN]      = 2;
 
   syscall_vector[DSOS_CALL_SEMCLOSE]      = internal_semClose;
   syscall_numarg[DSOS_CALL_SEMCLOSE]      = 1;
@@ -265,8 +265,8 @@ void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){
   setcontext(&running->cpu_state);
 }
 
-int disastrOS_semOpen(int id){
-	return disastrOS_syscall(DSOS_CALL_SEMOPEN,id); //11
+int disastrOS_semOpen(int id,int counter){
+	return disastrOS_syscall(DSOS_CALL_SEMOPEN,id,counter); //11
 }
 
 int disastrOS_semClose(int id){

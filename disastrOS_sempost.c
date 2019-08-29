@@ -28,8 +28,9 @@ void internal_semPost(){
 
 	//prendo il sem e aumento il contatore
   	Semaphore* sem = sd->semaphore;
+	printf("[SP]%d \n",sem->count);
 	sem->count++; 
-	
+	printf("[SP]%d \n",sem->count);	
 	//Se il contatore è <=0 ho processi in attesa
 
 	if(sem->count <=0 ){

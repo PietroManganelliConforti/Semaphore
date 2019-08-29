@@ -9,7 +9,8 @@
 void internal_semOpen(){
 
 	int id = running->syscall_args[0]; //id 
-
+	int counter = running->syscall_args[1]; //counter
+	//printf("[SO]open con id:%d,counter:%d\n",id,counter);
 	if(id<0){
 		printf("[SEMO] errore sem_id invalido (%d < 0!) \n",id);
 		running->syscall_retvalue = DSOS_ESEMID;	
@@ -19,7 +20,7 @@ void internal_semOpen(){
 	Semaphore* sem=SemaphoreList_byId(&semaphores_list,id); //vedo se esiste un sem associato
 
 	if (!sem){
-       		sem = Semaphore_alloc(id, 1); //in caso lo creo (type=1) e aggiungo in coda
+       		sem = Semaphore_alloc(id, counter); //in caso lo creo (type!=1) e aggiungo in coda
 			if(!sem) {
 				printf("[SEMO] errore nell'allocazione del semaforo!\n");
 				running->syscall_retvalue = DSOS_ESEMALLOC;
@@ -27,7 +28,7 @@ void internal_semOpen(){
 			}
         List_insert(&semaphores_list, semaphores_list.last, (ListItem*) sem);
     	}	
-	
+	printf("[SO]count %d\n",sem->count);
 
 	SemDescriptor* sd= SemDescriptor_alloc(running->last_sem_fd,sem,running);
 
@@ -46,7 +47,7 @@ void internal_semOpen(){
 	sd->ptr=sd_ptr;
 	List_insert(&sem->descriptors,sem->descriptors.last,(ListItem*) sd_ptr);
 	
-	printf("[SEM] semaforo con id: %d creato\n",id);
+	printf("[SEMO] semaforo con id:%d,counter:%d creato con successo\n",id,counter);
 	
 	running->syscall_retvalue = sd->fd;
 

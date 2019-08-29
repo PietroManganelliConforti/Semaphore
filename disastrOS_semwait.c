@@ -28,8 +28,9 @@ void internal_semWait(){
 
 	//prendo il sem e decremento il contatore
   	Semaphore* sem = sd->semaphore; 
+	printf("[SW]%d \n",sem->count);	
 	sem->count--; 
-
+	printf("[SW]%d \n",sem->count);
 	//se il count è <0 metto il processo in attesa
 	if(sem->count < 0 ){
 
