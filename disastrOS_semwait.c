@@ -21,16 +21,16 @@ void internal_semWait(){
 	SemDescriptor* sd= SemDescriptorList_byFd(&running->sem_descriptors, id);
 
  	if(!sd){
-  		 printf("[ERSEMW] Errore nella semWait del semaforo %d\n",id);
+  		 printf("[ERSEMW] Errore nella semWait del semaforo con id: %d\n",id);
 		 running->syscall_retvalue=DSOS_ESEMDESC;
    		 return;
   	}
 
 	//prendo il sem e decremento il contatore
   	Semaphore* sem = sd->semaphore; 
-	printf("[SW]%d \n",sem->count);	
+	//printf("[SW]%d \n",sem->count);	
 	sem->count--; 
-	printf("[SW]%d \n",sem->count);
+	//printf("[SW]%d \n",sem->count);
 	//se il count è <0 metto il processo in attesa
 	if(sem->count < 0 ){
 
@@ -46,7 +46,7 @@ void internal_semWait(){
 		running=(PCB*) List_detach(&ready_list, (ListItem*)ready_list.first);
 	}
 
-	printf("[SEMW]SemWait effettuata\n");
+	printf("[SW]SemWait effettuata dal processo: %d \n",disastrOS_getpid());
 	running->syscall_retvalue = 0;
 	return;
 }

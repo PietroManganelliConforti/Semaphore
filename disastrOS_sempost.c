@@ -28,9 +28,9 @@ void internal_semPost(){
 
 	//prendo il sem e aumento il contatore
   	Semaphore* sem = sd->semaphore;
-	printf("[SP]%d \n",sem->count);
+	//printf("[SP]%d \n",sem->count);
 	sem->count++; 
-	printf("[SP]%d \n",sem->count);	
+	//printf("[SP]%d \n",sem->count);	
 	//Se il contatore è <=0 ho processi in attesa
 
 	if(sem->count <=0 ){
@@ -49,7 +49,7 @@ void internal_semPost(){
 		running = next_sd_ptr->descriptor->pcb;
        	}
 
-	printf("[SEMP]Sempost effettuata\n");
+	printf("[SP]Sempost effettuata dal processo: %d \n",disastrOS_getpid());
 	running->syscall_retvalue = 0;
 	return;
 
