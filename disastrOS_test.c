@@ -2,6 +2,14 @@
 #include <unistd.h>
 #include <poll.h>
 #include "disastrOS.h"
+#include <assert.h>
+#define BUF_SIZE 20
+
+int buf[BUF_SIZE];
+int idx_scrittura;
+int idx_lettura;
+int sem1,sem2;
+int idx=1;
 
 // we need this to handle the sleep state
 void sleeperFunction(void* args){
@@ -13,60 +21,90 @@ void sleeperFunction(void* args){
 }
 
 void childFunction(void* args){
-  printf("Hello, I am the child function %d\n",disastrOS_getpid());
+  	printf("Hello, I am the child function of: %d\n",disastrOS_getpid());
 
-/*
-  printf("I will iterate a bit, before terminating\n");
-  int type=0;
-  int mode=0;
-  int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
-  printf("fd=%d\n", fd);
-  printf("PID: %d, terminating\n", disastrOS_getpid());
+	sem1=disastrOS_semOpen(1,0); //semaforo scrittori
+	sem2=disastrOS_semOpen(2,10); //semaforo lettori
+	printf("-------------\n");
+	
+	for(int i=0;i< 10;i++){ //10
 
-  for (int i=0; i<(disastrOS_getpid()+1); ++i){
-    printf("PID: %d, iterate %d\n", disastrOS_getpid(), i);
-    disastrOS_sleep((20-disastrOS_getpid())*5);
-  }
-*/
+	if(disastrOS_getpid()%2==0){ //scrive
 
-	int sem1=disastrOS_semOpen(1,0);
-//	int sem2=disastrOS_semOpen(2,1);
-//	int sem3=disastrOS_semOpen(-3);
-	if(disastrOS_getpid()%2==0){
-	disastrOS_semWait(sem1);
-	printf("effettuata sw da [[%d]]\n",disastrOS_getpid());}
-//	disastrOS_semWait(sem1);
-//	disastrOS_printStatus();
-//	disastrOS_semPost(sem1);
-//	disastrOS_printStatus();
-//	disastrOS_printStatus();
-    
-//  	disastrOS_semClose(sem2);
-//  	disastrOS_semClose(sem2);
-	if(disastrOS_getpid()%2==1){
-	disastrOS_semPost(sem1);
-	printf("effettuata sw da [[%d]]\n",disastrOS_getpid());}
+		disastrOS_semWait(sem2);
+	
+		buf[idx_scrittura] = idx;
+ 		printf("[Processo %d] Scritto %d in buf[%d]\n", disastrOS_getpid(), idx, idx_scrittura);
+  		idx_scrittura+= 1;
+		idx_scrittura%= BUF_SIZE;
+  		idx++;
 
+		//printf("effettuata sw da [[%d]]\n",disastrOS_getpid());
+		disastrOS_semPost(sem1);
+	}
+
+	else{ //legge
+	
+
+		disastrOS_semWait(sem1);
+
+		printf("[Processo %d] Leggo %d da buf[%d]\n", disastrOS_getpid(), buf[idx_lettura], idx_lettura);
+  		idx_lettura+= 1;
+		idx_lettura%= BUF_SIZE;
+
+		//printf("effettuata sp da [[%d]] \n",disastrOS_getpid());
+		disastrOS_semPost(sem2);
+
+	}
+
+	} 
 	disastrOS_semClose(sem1);
+  	disastrOS_semClose(sem2);
+	printf("-------------\n");
+
   disastrOS_exit(disastrOS_getpid()+1);
 }
 
 
 void initFunction(void* args) {
-  disastrOS_printStatus();
-  printf("hello, I am init and I just started\n");
-  disastrOS_spawn(sleeperFunction, 0);
+	disastrOS_printStatus();
+	printf("hello, I am init and I just started\n");
+	//disastrOS_spawn(sleeperFunction, 0);
+	
+	printf("\n--Test funzioni--\n\n");
+	
+	int sem1=disastrOS_semOpen(3,1);
+	int sem2=disastrOS_semOpen(-4,-3); //errore
+	int sem3=disastrOS_semOpen(3,1); //apre se già esistente
+	disastrOS_semWait(sem1);
+	disastrOS_semWait(22); //errore
+	disastrOS_semPost(22); //errore
+	disastrOS_semPost(sem1);
+	disastrOS_semClose(sem1);
+  	disastrOS_semClose(sem2); //errore
+	disastrOS_semClose(sem3);
+	disastrOS_semClose(sem3); //errore
+	
+  	printf("\n--Fine test--\n\n");
   
+  printf("Creo un buffer con tutti i valori a 0..\n[ ");
+  for(int i=0; i<BUF_SIZE; i++){
+	buf[i]=0;	
+	printf("%d ", buf[i]);
+  }
+  printf("]\n\n");
+
 
   printf("I feel like to spawn 10 nice threads\n");
   int alive_children=0;
-  for (int i=0; i<4; ++i) { ///cambiato da 10 a 4
-    int type=0;
-    int mode=DSOS_CREATE;
-    printf("mode: %d\n", mode);
-    printf("opening resource (and creating if necessary)\n");
-    int fd=disastrOS_openResource(i,type,mode);
-    printf("fd=%d\n", fd);
+
+  for (int i=0; i<10; ++i) {
+    //int type=0;
+    //int mode=DSOS_CREATE;
+    //printf("mode: %d\n", mode);
+    //printf("opening resource (and creating if necessary)\n");
+    //int fd=disastrOS_openResource(i,type,mode);
+    printf("[INIT]creato thread: %d \n", i+1 ); // fd);     ---!!!
     disastrOS_spawn(childFunction, 0);
     alive_children++;
   }
@@ -80,6 +118,12 @@ void initFunction(void* args) {
 	   pid, retval, alive_children);
     --alive_children;
   }
+
+  printf("\n\nBuffer a fine esecuzione: \n\n[ ");
+  for(int i=0; i<BUF_SIZE; i++){
+    printf("%d ", buf[i]);
+  }
+  printf("]\n\n");
   printf("shutdown!\n");
   disastrOS_shutdown();
 }
@@ -98,3 +142,7 @@ int main(int argc, char** argv){
   disastrOS_start(initFunction, 0, logfilename);
   return 0;
 }
+
+
+
+
