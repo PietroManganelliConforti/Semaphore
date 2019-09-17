@@ -3,7 +3,7 @@
 #include <poll.h>
 #include "disastrOS.h"
 #include <assert.h>
-#define BUF_SIZE 20
+#define BUF_SIZE 30
 
 int buf[BUF_SIZE];
 int idx_scrittura;

@@ -6,7 +6,7 @@
 #include "disastrOS_resource.h"
 #include "disastrOS_descriptor.h"
 
-
+//
 void internal_openResource(){
   //1 get from the PCB the resource id of the resource to open
   int id=running->syscall_args[0];
